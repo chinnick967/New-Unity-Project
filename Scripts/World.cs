@@ -7,10 +7,10 @@ using System.Collections;
 public class World : MonoBehaviour {
 
     private string[,,] world = new string[100,100,100];
-    private Vector3[] world_vertices;
-    private Vector3[] world_normals;
-    private Vector2[] world_uv;
-    private int[] world_triangles;
+    private Vector3[] world_vertices = new Vector3[0];
+    private Vector3[] world_normals = new Vector3[0];
+    private Vector2[] world_uv = new Vector2[0];
+    private int[] world_triangles = new int[0];
     private Mesh mesh;
     private Tools tools;
 
@@ -18,7 +18,6 @@ public class World : MonoBehaviour {
     void Start() {
         mesh = GetComponent<MeshFilter>().mesh; // initialize
         tools = new Tools(); // initialize tools object
-
         generateWorld();
     }
 
@@ -337,10 +336,12 @@ public class World : MonoBehaviour {
         }
         #endregion
 
-        world_vertices = tools.combineVector3Arrays(world_vertices, vertices);
-        world_normals = tools.combineVector3Arrays(world_normals, normales);
-        world_uv = tools.combineVector2Arrays(world_uv, uvs);
-        world_triangles = tools.combineIntArrays(world_triangles, triangles);
+        // Combines the arrays to concatenate the new values
+
+        tools.combineVector3Arrays(ref world_vertices, vertices);
+        tools.combineVector3Arrays(ref world_normals, normales);
+        tools.combineVector2Arrays(ref world_uv, uvs);
+        tools.combineIntArrays(ref world_triangles, triangles);
     }
 
 }
