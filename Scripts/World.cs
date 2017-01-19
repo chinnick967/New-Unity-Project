@@ -12,10 +12,13 @@ public class World : MonoBehaviour {
     private Vector2[] world_uv;
     private int[] world_triangles;
     private Mesh mesh;
+    private Tools tools;
 
     // Use this for initialization
     void Start() {
         mesh = GetComponent<MeshFilter>().mesh; // initialize
+        tools = new Tools(); // initialize tools object
+
         generateWorld();
     }
 
@@ -36,7 +39,7 @@ public class World : MonoBehaviour {
             {
                 for (int z = 0; z < 10; z++)
                 {
-                    generatecube(x, y, z);
+                    generateCube(x, y, z);
                 }
             }
         }
@@ -144,13 +147,13 @@ public class World : MonoBehaviour {
     }
     #endregion
 
-    private void generatecube(int x, int y, int z)
+    private void generateCube(int x, int y, int z)
     {
         // Skip generation if all sides are hidden
         Hashtable sides = checkCubeSides(x, y, z);
         if (sides["Right"].Equals(true) && sides["Left"].Equals(true) && sides["Front"].Equals(true) && sides["Back"].Equals(true) && sides["Top"].Equals(true) && sides["Bottom"].Equals(true))
         {
-            return; // Doesn't generate anything when all sides are hidden
+            return; // Doesn't generate anything when all sides are hidden from the player
         }
 
         float length = 1f;
@@ -334,33 +337,10 @@ public class World : MonoBehaviour {
         }
         #endregion
 
-        world_vertices = combineVector3Arrays(world_vertices, vertices);
-        world_normals = combineVector3Arrays(world_normals, normales);
-        world_uv = combineVector2Arrays(world_uv, uvs);
-        world_triangles = combineIntArrays(world_triangles, triangles);
+        world_vertices = tools.combineVector3Arrays(world_vertices, vertices);
+        world_normals = tools.combineVector3Arrays(world_normals, normales);
+        world_uv = tools.combineVector2Arrays(world_uv, uvs);
+        world_triangles = tools.combineIntArrays(world_triangles, triangles);
     }
 
-    public Vector3[] combineVector3Arrays(Vector3[] array1, Vector3[] array2)
-    {
-        var array3 = new Vector3[array1.Length + array2.Length];
-        System.Array.Copy(array1, array3, array1.Length);
-        System.Array.Copy(array2, 0, array3, array1.Length, array2.Length);
-        return array3;
-    }
-
-    public Vector2[] combineVector2Arrays(Vector2[] array1, Vector2[] array2)
-    {
-        var array3 = new Vector2[array1.Length + array2.Length];
-        System.Array.Copy(array1, array3, array1.Length);
-        System.Array.Copy(array2, 0, array3, array1.Length, array2.Length);
-        return array3;
-    }
-
-    public int[] combineIntArrays(int[] array1, int[] array2)
-    {
-        var array3 = new int[array1.Length + array2.Length];
-        System.Array.Copy(array1, array3, array1.Length);
-        System.Array.Copy(array2, 0, array3, array1.Length, array2.Length);
-        return array3;
-    }
 }
