@@ -18,12 +18,16 @@ public class World : MonoBehaviour {
     private int cubeCount = 0;
     private Mesh mesh;
     private Tools tools;
+    private List<Material> materials = new List<Material>();
+    private int submeshes;
+    private List<int>[] submesh_triangles;
 
     // Use this for initialization
     void Start() {
         mesh = GetComponent<MeshFilter>().mesh;
         Renderer renderer = GetComponent<Renderer>();
         tools = new Tools();
+        createMaterialList();
         generateWorld();
     }
 
@@ -35,7 +39,7 @@ public class World : MonoBehaviour {
     private void generateWorld() // Temporary world generation for testing to create a 10 x 10 x 10 block layout
     {
         mesh.Clear();
-
+        mesh.subMeshCount = submeshes;
         generateWorldArray();
 
         for (int x = 0; x < 10; x++)
@@ -56,8 +60,7 @@ public class World : MonoBehaviour {
 
         mesh.RecalculateBounds();
         mesh.Optimize();
-        mesh.subMeshCount = 5;
-        Debug.Log(mesh.subMeshCount);
+
     }
 
     #region World Generation
@@ -199,7 +202,8 @@ public class World : MonoBehaviour {
     #region Cube Bottom
     private void cubeBottom(int x, int y, int z, float length, float width, float height)
     {
-        
+        int[] submesh_triangles = new int[6];
+
         Vector3 p0 = new Vector3(x + -length * .5f, y + -width * .5f, z + height * .5f);
         Vector3 p1 = new Vector3(x + length * .5f, y + -width * .5f, z + height * .5f);
         Vector3 p2 = new Vector3(x + length * .5f, y + -width * .5f, z + -height * .5f);
@@ -246,6 +250,11 @@ public class World : MonoBehaviour {
         };
         
         cubeCount++;
+
+        for (int i = 6; i > 0; i++)
+        {
+
+        }
         
         tools.combineVector3Arrays(ref world_vertices, vertices);
         tools.combineVector3Arrays(ref world_normals, normales);
@@ -542,5 +551,14 @@ public class World : MonoBehaviour {
         tools.combineIntArrays(ref world_triangles, triangles);
     }
     #endregion
+
+    private void createMaterialList()
+    {
+        // Add all the materials
+        materials.Add((Material)Resources.Load("Materials/M_DrySoil", typeof(Material)));
+
+        submeshes = materials.Count;
+        submesh_triangles = new List<int>[submeshes];
+    }
 
 }
