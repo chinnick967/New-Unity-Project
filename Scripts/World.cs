@@ -9,7 +9,7 @@ using System.IO;
 
 public class World : MonoBehaviour {
 
-    private string[,,] world = new string[100,100,100];
+    private Cube[,,] world = new Cube[100,100,100];
     private List<string> block_types = new List<string> { "Dirt" };
     private Vector3[] world_vertices = new Vector3[0];
     private Vector3[] world_normals = new Vector3[0];
@@ -22,6 +22,7 @@ public class World : MonoBehaviour {
     // Use this for initialization
     void Start() {
         mesh = GetComponent<MeshFilter>().mesh;
+        Renderer renderer = GetComponent<Renderer>();
         tools = new Tools();
         generateWorld();
     }
@@ -55,6 +56,8 @@ public class World : MonoBehaviour {
 
         mesh.RecalculateBounds();
         mesh.Optimize();
+        mesh.subMeshCount = 5;
+        Debug.Log(mesh.subMeshCount);
     }
 
     #region World Generation
@@ -66,7 +69,7 @@ public class World : MonoBehaviour {
             {
                 for (int z = 0; z < 10; z++)
                 {
-                    world[x, y, z] = "Dirt";
+                    world[x, y, z] = new Cube("Dirt");
                 }
             }
         }
@@ -139,7 +142,7 @@ public class World : MonoBehaviour {
     {
         try
         {
-            if (block_types.Contains(world[x, y, z]))
+            if (block_types.Contains(world[x, y, z].type))
             {
                 return true;
             }
