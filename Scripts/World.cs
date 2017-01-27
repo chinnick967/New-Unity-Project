@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.IO;
+using System.Linq;
 
 [RequireComponent(typeof (MeshFilter))]
 [RequireComponent(typeof (MeshRenderer))]
@@ -28,6 +29,7 @@ public class World : MonoBehaviour {
         Renderer renderer = GetComponent<Renderer>();
         tools = new Tools();
         createMaterialList();
+        renderer.materials = materials.ToArray();
         generateWorld();
     }
 
@@ -56,7 +58,8 @@ public class World : MonoBehaviour {
         mesh.vertices = world_vertices;
         mesh.normals = world_normals;
         mesh.uv = world_uv;
-        mesh.triangles = world_triangles;
+        //mesh.triangles = world_triangles;
+        setSubmeshTriangles();
 
         mesh.RecalculateBounds();
         mesh.Optimize();
@@ -202,7 +205,7 @@ public class World : MonoBehaviour {
     #region Cube Bottom
     private void cubeBottom(int x, int y, int z, float length, float width, float height)
     {
-        int[] submesh_triangles = new int[6];
+
 
         Vector3 p0 = new Vector3(x + -length * .5f, y + -width * .5f, z + height * .5f);
         Vector3 p1 = new Vector3(x + length * .5f, y + -width * .5f, z + height * .5f);
@@ -250,16 +253,14 @@ public class World : MonoBehaviour {
         };
         
         cubeCount++;
-
-        for (int i = 6; i > 0; i++)
-        {
-
-        }
         
         tools.combineVector3Arrays(ref world_vertices, vertices);
         tools.combineVector3Arrays(ref world_normals, normales);
         tools.combineVector2Arrays(ref world_uv, uvs);
-        tools.combineIntArrays(ref world_triangles, triangles);
+        //tools.combineIntArrays(ref world_triangles, triangles);
+
+        foreach (int i in triangles) { submesh_triangles[block_types.IndexOf(world[x, y, z].type)].Add(i); }
+
     }
     #endregion
     #region Cube Left
@@ -316,7 +317,8 @@ public class World : MonoBehaviour {
         tools.combineVector3Arrays(ref world_vertices, vertices);
         tools.combineVector3Arrays(ref world_normals, normales);
         tools.combineVector2Arrays(ref world_uv, uvs);
-        tools.combineIntArrays(ref world_triangles, triangles);
+        //tools.combineIntArrays(ref world_triangles, triangles);
+        foreach (int i in triangles) { submesh_triangles[block_types.IndexOf(world[x, y, z].type)].Add(i); }
     }
     #endregion
     #region Cube Front
@@ -374,7 +376,8 @@ public class World : MonoBehaviour {
         tools.combineVector3Arrays(ref world_vertices, vertices);
         tools.combineVector3Arrays(ref world_normals, normales);
         tools.combineVector2Arrays(ref world_uv, uvs);
-        tools.combineIntArrays(ref world_triangles, triangles);
+        //tools.combineIntArrays(ref world_triangles, triangles);
+        foreach (int i in triangles) { submesh_triangles[block_types.IndexOf(world[x, y, z].type)].Add(i); }
     }
     #endregion
     #region Cube Back
@@ -432,7 +435,8 @@ public class World : MonoBehaviour {
         tools.combineVector3Arrays(ref world_vertices, vertices);
         tools.combineVector3Arrays(ref world_normals, normales);
         tools.combineVector2Arrays(ref world_uv, uvs);
-        tools.combineIntArrays(ref world_triangles, triangles);
+        //tools.combineIntArrays(ref world_triangles, triangles);
+        foreach (int i in triangles) { submesh_triangles[block_types.IndexOf(world[x, y, z].type)].Add(i); }
     }
     #endregion
     #region Cube Right
@@ -490,7 +494,8 @@ public class World : MonoBehaviour {
         tools.combineVector3Arrays(ref world_vertices, vertices);
         tools.combineVector3Arrays(ref world_normals, normales);
         tools.combineVector2Arrays(ref world_uv, uvs);
-        tools.combineIntArrays(ref world_triangles, triangles);
+        //tools.combineIntArrays(ref world_triangles, triangles);
+        foreach (int i in triangles) { submesh_triangles[block_types.IndexOf(world[x, y, z].type)].Add(i); }
     }
     #endregion
     #region Cube Top
@@ -548,7 +553,8 @@ public class World : MonoBehaviour {
         tools.combineVector3Arrays(ref world_vertices, vertices);
         tools.combineVector3Arrays(ref world_normals, normales);
         tools.combineVector2Arrays(ref world_uv, uvs);
-        tools.combineIntArrays(ref world_triangles, triangles);
+        //tools.combineIntArrays(ref world_triangles, triangles);
+        foreach (int i in triangles) { submesh_triangles[block_types.IndexOf(world[x, y, z].type)].Add(i); }
     }
     #endregion
 
@@ -559,6 +565,19 @@ public class World : MonoBehaviour {
 
         submeshes = materials.Count;
         submesh_triangles = new List<int>[submeshes];
+
+        for (int i = 0; i < submesh_triangles.Length; i++)
+        {
+            submesh_triangles[i] = new List<int>();
+        }
+    }
+    
+    private void setSubmeshTriangles()
+    {
+        for (int i = 0; i < mesh.subMeshCount; i++)
+        {
+            mesh.SetTriangles(submesh_triangles[i].ToArray(), i);
+        }
     }
 
 }
